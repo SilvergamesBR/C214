@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_c214/widgets/search_field.dart';
 
 void main() {
   runApp(const MyApp());
@@ -89,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -108,6 +110,21 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            SearchField(
+              labelText: 'Pesquisar',
+              hintText: 'Digite o que quer pesquisar',
+              helperText: 'O resultado aparecerá na Snackbar',
+              onSearch:
+                  (input) => {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Foi digitado $input na bara de pesquisa',
+                        ),
+                      ),
+                    ),
+                  },
             ),
           ],
         ),
