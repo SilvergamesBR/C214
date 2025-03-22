@@ -56,4 +56,45 @@ void main() async {
     final decoration = inputDecorator.decoration;
     expect(decoration.helperText, testHelperText);
   });
+
+  testWidgets('should call onSearch when search button is pressed', (
+    WidgetTester tester,
+  ) async {
+    String? capturedInput;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SearchField(
+            onSearch: (input) {
+              capturedInput = input;
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextField), 'Flutter Test');
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pump();
+
+    expect(capturedInput, 'Flutter Test');
+  });
+
+  testWidgets('should allow text input', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(home: Scaffold(body: SearchField(onSearch: (_) {}))),
+    );
+
+    await tester.enterText(find.byType(TextField), 'Testando Input');
+    expect(find.text('Testando Input'), findsOneWidget);
+  });
+
+  testWidgets('should have an outlined border', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(home: Scaffold(body: SearchField(onSearch: (_) {}))),
+    );
+
+    final textField = tester.widget<TextField>(find.byType(TextField));
+    expect(textField.decoration?.border, isA<OutlineInputBorder>());
+  });
 }
