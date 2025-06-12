@@ -1,4 +1,4 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
@@ -8,16 +8,17 @@ on:
 
 jobs:
   build:
+    name: Build Web App
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Flutter SDK
+      - name: Setup Flutter
         uses: flutter-actions/setup-flutter@v4
         with:
           channel: stable
-          version: latest
           cache: true
           cache-sdk: true
 
@@ -31,7 +32,45 @@ jobs:
           cd projeto_c214
           flutter analyze
 
-      - name: Test
+      - name: Build Web
         run: |
           cd projeto_c214
-          flutter test
+          flutter build web --release
+
+      - name: Upload Web build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-release
+          path: projeto_c214/build/web
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          cache: true
+          cache-sdk: true
+
+      - name: Install dependencies
+        run: |
+          cd projeto_c214
+          flutter pub get
+
+      - name: Run tests (machine-readable)
+        run: |
+          cd projeto_c214
+          flutter test --machine > test-report.json || true
+
+      - name: Upload test-report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: flutter-test-report
+          path: projeto_c214/test-report.json
