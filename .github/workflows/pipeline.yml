@@ -9,14 +9,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Flutter
-        uses: flutter/setup-flutter@v2
+      - name: Setup Flutter SDK
+        uses: flutter-actions/setup-flutter@v4
         with:
           channel: stable
+          version: latest
           cache: true
+          cache-sdk: true
 
       - name: Install dependencies
         run: |
