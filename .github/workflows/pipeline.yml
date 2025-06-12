@@ -1,4 +1,4 @@
-name: pipeline
+name: CI
 
 on:
   push:
@@ -9,26 +9,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Flutter SDK
-        uses: subosito/flutter-action@v2
+      - name: Install Flutter
+        uses: flutter/setup-flutter@v2
         with:
-          flutter-version: 'stable'
+          channel: stable
+          cache: true
 
       - name: Install dependencies
         run: |
           cd projeto_c214
           flutter pub get
 
-      - name: Analyze project source
+      - name: Analyze
         run: |
           cd projeto_c214
           flutter analyze
 
-      - name: Run tests
+      - name: Test
         run: |
           cd projeto_c214
           flutter test
