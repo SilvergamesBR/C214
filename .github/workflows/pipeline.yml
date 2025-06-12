@@ -16,10 +16,16 @@ jobs:
       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
       - name: Install dependencies
-        run: dart pub get
+        run: |
+          cd C214_project
+          dart pub get
 
       - name: Analyze project source
-        run: dart analyze
+        run: |
+          cd C214_project
+          dart analyze
 
       - name: Run tests
-        run: flutter test
+        run: |
+          cd C214_project
+          flutter test
