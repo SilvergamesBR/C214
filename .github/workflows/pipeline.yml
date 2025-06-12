@@ -17,15 +17,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd C214_project
+          cd projeto_c214
           dart pub get
 
       - name: Analyze project source
         run: |
-          cd C214_project
+          cd projeto_c214
           dart analyze
 
       - name: Run tests
         run: |
-          cd C214_project
+          cd projeto_c214
           flutter test
