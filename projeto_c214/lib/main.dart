@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_c214/models/movie.dart';
 import 'package:projeto_c214/services/movie_service.dart';
+import 'package:projeto_c214/widgets/add_movie_dialog.dart';
 import 'package:projeto_c214/widgets/movie_card.dart';
 import 'package:projeto_c214/widgets/search_field.dart';
 
@@ -142,21 +143,52 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _submitRating(Movie movie, double rating) async {
     try {
       await MovieService.rateMovie(movie.id!, rating);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Successfully rated ${movie.name}!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      _refreshMovies(); // Refresh to show updated rating
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully rated ${movie.name}!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      _refreshMovies();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error rating movie: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error rating movie: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
+  }
+
+  Future<void> _handleMovieAdded(MovieCreate movieCreate) async {
+    try {
+      final newMovie = await MovieService.createMovie(movieCreate);
+      _refreshMovies();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Movie "${newMovie.name}" added successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Error will be handled by the dialog
+      rethrow;
+    }
+  }
+
+  void _showAddMovieDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AddMovieDialog(onMovieAdded: _handleMovieAdded),
+    );
   }
 
   @override
@@ -188,11 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add movie feature - TODO')),
-          );
-        },
+        onPressed: _showAddMovieDialog,
         tooltip: 'Add Movie',
         child: const Icon(Icons.add),
       ),
