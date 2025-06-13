@@ -23,6 +23,8 @@ services:
     build:
       context: ./projeto_c214
       dockerfile: dockerfile
+      args:
+        - API_BASE_URL=http://fastapi-backend:8000
     container_name: flutter-frontend
     ports:
       - "80:80"

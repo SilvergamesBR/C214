@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, Field, Session, create_engine, select
 from typing import List, Optional
 from pydantic import BaseModel
@@ -34,6 +35,15 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(title="Movie Rating API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 
 def get_session():
     with Session(engine) as session:
