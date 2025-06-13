@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/movie.dart';
 
 class MovieService {
+  final http.Client _httpClient;
+
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: 'http://localhost:8000',
@@ -13,14 +15,17 @@ class MovieService {
     'Accept': 'application/json',
   };
 
-  static Future<List<Movie>> getMovies({String? nameFilter}) async {
+  MovieService({http.Client? httpClient})
+    : _httpClient = httpClient ?? http.Client();
+
+  Future<List<Movie>> getMovies({String? nameFilter}) async {
     try {
       String url = '$baseUrl/movies/';
       if (nameFilter != null && nameFilter.isNotEmpty) {
         url += '?name=${Uri.encodeComponent(nameFilter)}';
       }
 
-      final response = await http.get(Uri.parse(url), headers: headers);
+      final response = await _httpClient.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
@@ -33,9 +38,9 @@ class MovieService {
     }
   }
 
-  static Future<Movie> getMovie(int id) async {
+  Future<Movie> getMovie(int id) async {
     try {
-      final response = await http.get(
+      final response = await _httpClient.get(
         Uri.parse('$baseUrl/movies/$id'),
         headers: headers,
       );
@@ -53,9 +58,9 @@ class MovieService {
     }
   }
 
-  static Future<Movie> createMovie(MovieCreate movieCreate) async {
+  Future<Movie> createMovie(MovieCreate movieCreate) async {
     try {
-      final response = await http.post(
+      final response = await _httpClient.post(
         Uri.parse('$baseUrl/movies/'),
         headers: headers,
         body: json.encode(movieCreate.toJson()),
@@ -72,11 +77,10 @@ class MovieService {
     }
   }
 
-  static Future<Movie> rateMovie(int movieId, double rating) async {
+  Future<Movie> rateMovie(int movieId, double rating) async {
     try {
-      // Use RatingIn instead of RatingRequest to match FastAPI
       final ratingRequest = {'rating': rating};
-      final response = await http.patch(
+      final response = await _httpClient.patch(
         Uri.parse('$baseUrl/movies/$movieId/rating'),
         headers: headers,
         body: json.encode(ratingRequest),
@@ -97,9 +101,9 @@ class MovieService {
     }
   }
 
-  static Future<Movie> updateMovie(int movieId, MovieCreate movieCreate) async {
+  Future<Movie> updateMovie(int movieId, MovieCreate movieCreate) async {
     try {
-      final response = await http.put(
+      final response = await _httpClient.put(
         Uri.parse('$baseUrl/movies/$movieId'),
         headers: headers,
         body: json.encode(movieCreate.toJson()),
@@ -118,9 +122,9 @@ class MovieService {
     }
   }
 
-  static Future<void> deleteMovie(int movieId) async {
+  Future<void> deleteMovie(int movieId) async {
     try {
-      final response = await http.delete(
+      final response = await _httpClient.delete(
         Uri.parse('$baseUrl/movies/$movieId'),
         headers: headers,
       );

@@ -88,6 +88,15 @@ class MovieCreate {
       'director': director,
     };
   }
+
+  factory MovieCreate.fromJson(Map<String, dynamic> json) {
+    return MovieCreate(
+      name: json['name'],
+      duration: json['duration'],
+      actors: List<String>.from(json['actors'] ?? []),
+      director: json['director'],
+    );
+  }
 }
 
 class RatingRequest {

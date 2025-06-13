@@ -39,10 +39,12 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isLoading = true;
   String? errorMessage;
   String currentSearchQuery = '';
+  late MovieService _movieService;
 
   @override
   void initState() {
     super.initState();
+    _movieService = MovieService();
     _loadMovies();
   }
 
@@ -53,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final fetchedMovies = await MovieService.getMovies(
+      final fetchedMovies = await _movieService.getMovies(
         nameFilter: searchQuery,
       );
       setState(() {
@@ -142,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _submitRating(Movie movie, double rating) async {
     try {
-      await MovieService.rateMovie(movie.id!, rating);
+      await _movieService.rateMovie(movie.id!, rating);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -166,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _handleMovieAdded(MovieCreate movieCreate) async {
     try {
-      final newMovie = await MovieService.createMovie(movieCreate);
+      final newMovie = await _movieService.createMovie(movieCreate);
       _refreshMovies();
 
       if (mounted) {
